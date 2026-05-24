@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Кредит</title>
+
+<style>
+body{
+    background:#0b1220;
+    color:white;
+    font-family:Arial;
+    padding:30px;
+}
+
+.card{
+    background:#111827;
+    padding:20px;
+    border-radius:10px;
+    max-width:500px;
+    margin:auto;
+}
+
+.row{
+    display:flex;
+    justify-content:space-between;
+    margin:10px 0;
+    padding:10px;
+    background:#0f172a;
+    border-radius:6px;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    border:none;
+    border-radius:6px;
+    color:white;
+    cursor:pointer;
+}
+
+.pay{
+    background:#22c55e;
+}
+
+.close{
+    background:#ef4444;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<h2>🏦 Кредит #{{ loan[0] }}</h2>
+
+<div class="row">
+    <span>Сумма</span>
+    <span>{{ loan[1] }} $</span>
+    <div class="row">
+    <span>Срок</span>
+    <span>{{ loan[2] }} мес.</span>
+</div>
+
+<div class="row">
+    <span>Платёж в месяц</span>
+    <span>{{ monthly_payment }} $</span>
+</div>
+</div>
+
+<div class="row">
+    <span>Статус</span>
+    <span>{{ loan[2] }}</span>
+</div>
+
+<form method="POST" action="/pay_month">
+
+    <input type="hidden" name="loan_id" value="{{ loan[0] }}">
+
+    <button class="pay">
+        💰 Оплатить месяц
+    </button>
+
+</form>
+
+<form method="POST" action="/close_loan">
+
+    <input type="hidden" name="loan_id" value="{{ loan[0] }}">
+
+    <button class="close">
+        ❌ Закрыть кредит полностью
+    </button>
+
+</form>
+
+</div>
+
+</body>
+</html>

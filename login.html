@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Вход в банк</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #0b1220;
+    color: #e5e7eb;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* CARD */
+.card {
+    background: #111827;
+    padding: 20px;
+    border-radius: 12px;
+    width: 320px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.4);
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* INPUT */
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    background: #0f172a;
+    border: 1px solid #1f2937;
+    color: white;
+    border-radius: 6px;
+}
+
+/* BUTTON */
+button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    background: #38bdf8;
+    border: none;
+    color: black;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #0ea5e9;
+}
+
+/* INFO */
+.info {
+    font-size: 12px;
+    color: #9ca3af;
+    margin-top: 10px;
+    text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <h2>🏦 Вход в банк</h2>
+
+    <form method="POST">
+        <label>Имя пользователя</label>
+        <input type="text" name="name" placeholder="Введите имя" required>
+
+        <label>Пароль</label>
+        <input type="password" name="password" placeholder="Введите пароль" required>
+
+        <button type="submit">Войти</button>
+    </form>
+
+    <div class="info">
+        Логин = имя клиента<br>
+        Пароль = admin
+    </div>
+
+</div>
+
+</body>
+</html>

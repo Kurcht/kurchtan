@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Bank Admin System PRO</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #0b1220;
+    color: #e5e7eb;
+}
+
+.header {
+    padding: 15px;
+    background: #111827;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.badge {
+    background: #1f2937;
+    padding: 6px 10px;
+    border-radius: 6px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr;
+    gap: 12px;
+    padding: 12px;
+}
+
+.card {
+    background: #111827;
+    border-radius: 10px;
+    padding: 12px;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px;
+    background: #0f172a;
+    margin: 4px 0;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.green { color: #22c55e; }
+.red { color: #ef4444; }
+.blue { color: #38bdf8; }
+.yellow { color: #facc15; }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+th, td {
+    padding: 6px;
+    border-bottom: 1px solid #1f2937;
+}
+
+th {
+    color: #93c5fd;
+    text-align: left;
+}
+
+.client-link {
+    color: #38bdf8;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.client-link:hover {
+    text-decoration: underline;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background: #ef4444;
+    border: none;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #dc2626;
+}
+
+/* GRID AREAS */
+.analytics { grid-column: 1; }
+.chart1 { grid-column: 2; }
+.chart2 { grid-column: 3; }
+.chart3 { grid-column: 1 / span 3; }
+.clients { grid-column: 1; }
+.loans { grid-column: 2; }
+.risk { grid-column: 3; }
+.transactions { grid-column: 1 / span 3; }
+
+/* NEW CHART STYLE (FIX SIZE) */
+.small-chart {
+    height: 260px;
+}
+
+.small-chart canvas {
+    width: 100% !important;
+    height: 200px !important;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h2>🏦 Bank Admin PRO</h2>
+    <div class="badge">Full Analytics System</div>
+</div>
+
+<div class="grid">
+
+<!-- KPI -->
+<div class="card analytics">
+    <h3>📊 KPI</h3>
+
+    <div class="row">
+        <span>Transfers</span>
+        <span>{{ total_transfers }}</span>
+    </div>
+
+    <div class="row">
+        <span>Volume</span>
+        <span class="green">{{ volume }}</span>
+    </div>
+
+    <div class="row">
+        <span>Avg balance</span>
+        <span>{{ avg_balance }}</span>
+    </div>
+
+    <div class="row">
+        <span>Fees</span>
+        <span class="yellow">{{ fee_income }}</span>
+    </div>
+
+    <div class="row">
+        <span>Top client</span>
+        <span class="blue">
+            {% if top_client %}
+                {{ top_client[0] }}
+            {% else %}
+                none
+            {% endif %}
+        </span>
+    </div>
+
+    <a href="/suspicious">
+        <button>⚠ Suspicious</button>
+    </a>
+</div>
+
+<!-- CHARTS -->
+<div class="card chart1">
+    <h3>📈 Transactions</h3>
+    <canvas id="txChart"></canvas>
+</div>
+
+<div class="card chart2">
+    <h3>💰 Balances</h3>
+    <canvas id="balChart"></canvas>
+</div>
+
+<div class="card chart3">
+    <h3>💸 Fees over time</h3>
+    <canvas id="feeChart"></canvas>
+</div>
+
+<!-- CLIENTS -->
+<div class="card clients">
+    <h3>👤 Clients</h3>
+
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Balance</th>
+        </tr>
+
+        {% for c in clients %}
+        <tr>
+            <td>
+                <a class="client-link" href="/client_detail/{{ c[1] }}">
+                    {{ c[1] }}
+                </a>
+            </td>
+            <td class="green">{{ c[3] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<!-- LOANS -->
+<div class="card loans">
+    <h3>🏦 Loans</h3>
+
+    {% for l in loans %}
+    <a href="/loan/{{ l[0] }}" style="text-decoration:none;">
+        <div class="row">
+            <span class="yellow">Loan #{{ l[0] }}</span>
+            <span class="green">{{ l[2] }} $</span>
+            <span class="{% if l[3]=='active' %}blue{% else %}red{% endif %}">
+                {{ l[3] }}
+            </span>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+
+<!-- RISK -->
+<div class="card risk">
+    <h3>⚠ Risk</h3>
+
+    {% for r in risk_clients %}
+    <div class="row">
+        <span>{{ r[0] }}</span>
+        <span class="red">{{ r[1] }} tx</span>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- TRANSACTIONS -->
+<div class="card transactions">
+    <h3>📄 Transactions</h3>
+
+    <table>
+        <tr>
+            <th>Sender</th>
+            <th>Receiver</th>
+            <th>Amount</th>
+            <th>Fee</th>
+            <th>Time</th>
+        </tr>
+
+        {% for t in transactions[:20] %}
+        <tr>
+            <td>{{ t[0] }}</td>
+            <td>{{ t[1] }}</td>
+            <td class="green">{{ t[2] }}</td>
+            <td class="yellow">{{ t[3] }}</td>
+            <td class="blue">{{ t[4] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<!-- ========================= -->
+<!-- NEW CREDIT ANALYTICS -->
+<!-- ========================= -->
+
+<div class="card small-chart">
+    <h3>🏦 Loan Status</h3>
+    <canvas id="loanStatusChart"></canvas>
+</div>
+
+<div class="card small-chart">
+    <h3>💰 Loan Volume</h3>
+    <canvas id="loanVolumeChart"></canvas>
+</div>
+
+<div class="card small-chart">
+    <h3>📊 Loan Distribution</h3>
+    <canvas id="loanPieChart"></canvas>
+</div>
+
+</div>
+
+<!-- ========================= -->
+<!-- CHARTS SCRIPT -->
+<!-- ========================= -->
+
+<script>
+const loans = {{ loans | tojson }};
+
+new Chart(document.getElementById('txChart'), {
+    type: 'bar',
+    data: {
+        labels: {{ tx_labels|tojson }},
+        datasets: [{
+            label: 'Transactions',
+            data: {{ tx_values|tojson }},
+            backgroundColor: '#38bdf8'
+        }]
+    }
+});
+
+new Chart(document.getElementById('balChart'), {
+    type: 'line',
+    data: {
+        labels: {{ bal_labels|tojson }},
+        datasets: [{
+            label: 'Balance',
+            data: {{ bal_values|tojson }},
+            borderColor: '#22c55e',
+            fill: false
+        }]
+    }
+});
+
+new Chart(document.getElementById('feeChart'), {
+    type: 'line',
+    data: {
+        labels: {{ fee_labels|tojson }},
+        datasets: [{
+            label: 'Fees',
+            data: {{ fee_values|tojson }},
+            borderColor: '#facc15',
+            fill: false
+        }]
+    }
+});
+
+
+
+
+/* ========================= */
+/* LOAN ANALYTICS */
+/* ========================= */
+
+let status = {};
+let volume = {};
+
+loans.forEach(l => {
+    status[l[3]] = (status[l[3]] || 0) + 1;
+    volume[l[1]] = (volume[l[1]] || 0) + l[2];
+});
+
+new Chart(document.getElementById('loanStatusChart'), {
+    type: 'pie',
+    data: {
+        labels: Object.keys(status),
+        datasets: [{
+            data: Object.values(status),
+            backgroundColor: ['#22c55e','#ef4444','#38bdf8']
+        }]
+    }
+});
+
+new Chart(document.getElementById('loanVolumeChart'), {
+    type: 'bar',
+    data: {
+        labels: Object.keys(volume),
+        datasets: [{
+            label: 'Loans',
+            data: Object.values(volume),
+            backgroundColor: '#a855f7'
+        }]
+    }
+});
+
+new Chart(document.getElementById('loanPieChart'), {
+    type: 'doughnut',
+    data: {
+        labels: Object.keys(status),
+        datasets: [{
+            data: Object.values(status),
+            backgroundColor: ['#22c55e','#ef4444','#38bdf8']
+        }]
+    }
+});
+</script>
+
+</body>
+</html>

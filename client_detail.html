@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Клиент</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #0b1220;
+    color: #e5e7eb;
+}
+
+.header {
+    padding: 16px;
+    background: #111827;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #1f2937;
+}
+
+
+
+.container {
+    padding: 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.card {
+    background: #111827;
+    padding: 14px;
+    border-radius: 10px;
+    box-shadow: 0 0 0 1px #1f2937;
+}
+
+h3 {
+    margin-top: 0;
+    color: #93c5fd;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+    background: #0f172a;
+    border-radius: 6px;
+    margin: 5px 0;
+    font-size: 13px;
+}
+
+.green { color: #22c55e; }
+.red { color: #ef4444; }
+blue { color: #38bdf8; }
+.yellow { color: #facc15; }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+th, td {
+    padding: 8px;
+    border-bottom: 1px solid #1f2937;
+}
+
+th {
+    color: #93c5fd;
+    text-align: left;
+}
+
+.full {
+    grid-column: span 2;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h2>👤 {{ user[0] }}</h2>
+    <a href="/admin" style="color:#38bdf8;">← Назад</a>
+</div>
+
+<div class="container">
+
+    <!-- PROFILE -->
+    <div class="card">
+        <h3>📌 Профиль</h3>
+
+        <div class="row">
+            <span>Имя</span>
+            <span>{{ user[0] }}</span>
+        </div>
+
+        <div class="row">
+            <span>Баланс</span>
+            <span class="green">{{ user[1] }} $</span>
+        </div>
+    </div>
+
+    <!-- STATUS -->
+    <div class="card">
+        <h3>📊 Статус</h3>
+
+        <div class="row">
+            <span>Риск</span>
+            <span class="yellow">
+                {% if history|length > 10 %}
+                    High
+                {% elif history|length > 3 %}
+                    Medium
+                {% else %}
+                    Low
+                {% endif %}
+            </span>
+        </div>
+
+        <div class="row">
+            <span>Транзакции</span>
+            <span>{{ history|length }}</span>
+        </div>
+    </div>
+
+    <!-- LOANS -->
+    <div class="card">
+        <h3>🏦 Кредиты</h3>
+
+        {% for l in loans %}
+        <div class="row">
+            <span>{{ l[1] }} $</span>
+            <span class="{% if l[2]=='approved' %}green{% elif l[2]=='active' %}blue{% else %}red{% endif %}">
+                {{ l[2] }}
+            </span>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- HISTORY -->
+    <div class="card full">
+        <h3>📄 История операций</h3>
+
+        <table>
+            <tr>
+                <th>От</th>
+                <th>Кому</th>
+                <th>Сумма</th>
+                <th>Комиссия</th>
+                <th>Время</th>
+            </tr>
+
+            {% for t in history %}
+            <tr>
+                <td>{{ t[0] }}</td>
+                <td>{{ t[1] }}</td>
+                <td class="green">{{ t[2] }}</td>
+                <td class="yellow">{{ t[3] }}</td>
+                <td>{{ t[4] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>

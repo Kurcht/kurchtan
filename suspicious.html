@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Подозрительные переводы</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #0b1220;
+    color: #e5e7eb;
+}
+
+.header {
+    padding: 15px;
+    background: #111827;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.container {
+    padding: 12px;
+}
+
+/* CARD */
+.card {
+    background: #111827;
+    border-radius: 10px;
+    padding: 12px;
+}
+
+/* ROW */
+.row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+    background: #0f172a;
+    margin: 6px 0;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.green { color: #22c55e; }
+.red { color: #ef4444; }
+.blue { color: #38bdf8; }
+.yellow { color: #facc15; }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+th, td {
+    padding: 8px;
+    border-bottom: 1px solid #1f2937;
+}
+
+th {
+    color: #93c5fd;
+    text-align: left;
+}
+
+/* BUTTON */
+button {
+    width: 200px;
+    padding: 10px;
+    background: #ef4444;
+    border: none;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+a {
+    color: #38bdf8;
+    text-decoration: none;
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <h2>⚠ Подозрительные транзакции</h2>
+    <a href="/admin">← Назад в админку</a>
+</div>
+
+<div class="container">
+
+    <div class="card">
+        <h3>🚨 Список подозрительных переводов</h3>
+
+        <p class="yellow">
+            Подозрительные транзакции — это переводы с высокой суммой или частой активностью.
+        </p>
+
+        <table>
+            <tr>
+                <th>Отправитель</th>
+                <th>Получатель</th>
+                <th>Сумма</th>
+                <th>Комиссия</th>
+                <th>Время</th>
+            </tr>
+
+            {% for t in transfers %}
+            <tr>
+                <td>{{ t[0] }}</td>
+                <td>{{ t[1] }}</td>
+                <td class="red">{{ t[2] }}</td>
+                <td class="yellow">{{ t[3] }}</td>
+                <td class="blue">{{ t[4] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <br>
+
+    <div class="card">
+        <h3>📊 Критерии риска</h3>
+
+        <div class="row">
+            <span>Сумма > 15</span>
+            <span class="red">высокий риск</span>
+        </div>
+
+        <div class="row">
+            <span>Частые переводы</span>
+            <span class="yellow">средний риск</span>
+        </div>
+
+        <div class="row">
+            <span>Поведение клиента</span>
+            <span class="blue">анализируется</span>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
